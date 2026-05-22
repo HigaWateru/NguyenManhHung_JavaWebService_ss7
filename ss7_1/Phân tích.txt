@@ -1,0 +1,11 @@
+vi phạm quy tắc S trong SOLID Code trên vi phạm nguyên tắc Single Responsibility Principle trong SOLID.
+
+Theo nguyên tắc này, mỗi class hoặc method chỉ nên chịu trách nhiệm cho một nhiệm vụ chính.
+
+Trong bài toán này, TransactionService có nhiệm vụ chính là xử lý nghiệp vụ giao dịch, ví dụ:
+
+Xử lý thanh toán Kiểm tra tài khoản Thực hiện giao dịch Trả kết quả giao dịch
+
+Tuy nhiên, khi thêm code đo thời gian trực tiếp vào method, TransactionService phải làm thêm một nhiệm vụ khác là ghi log hiệu năng.
+
+Điều này khiến một method vừa xử lý nghiệp vụ, vừa xử lý logging, làm cho code bị rối và khó bảo trì.

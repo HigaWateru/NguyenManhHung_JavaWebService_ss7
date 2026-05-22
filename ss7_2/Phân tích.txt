@@ -1,0 +1,1 @@
+bởi vì khi chạy nếu role không phaỉ Admin thì code chỉ in ra màn console thôi nên vẫn chạy tiếp còn nếu mình sửa thành exception thì sẽ dừng luôn

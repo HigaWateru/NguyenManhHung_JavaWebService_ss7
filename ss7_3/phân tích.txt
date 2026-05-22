@@ -1,0 +1,34 @@
+Phân tích giải pháp bảo mật OTP bằng Custom Annotation
+
+Input / Output Input Các hàm nghiệp vụ cần bảo mật bằng OTP nhận thêm tham số otp.
+Ví dụ:
+
+withdraw(double amount, String otp) transfer(String toUser, double amount, String otp) Trong đó:
+
+amount: số tiền cần rút hoặc chuyển. toUser: người nhận tiền khi chuyển khoản. otp: mã xác thực dùng để kiểm tra giao dịch. OTP hợp lệ được cấu hình trong file application.properties:
+
+security.otp.expected=123456 Output Nếu OTP hợp lệ, chương trình cho phép hàm nghiệp vụ chạy tiếp và trả về kết quả thành công.
+
+Ví dụ:
+
+Rút tiền thành công Chuyển khoản thành công Nếu OTP sai, rỗng, chỉ chứa khoảng trắng hoặc không truyền OTP, Aspect sẽ chặn trước khi hàm nghiệp vụ được thực thi.
+
+Ví dụ:
+
+Rút tiền thất bại: Sai OTP Chuyển khoản thất bại: Sai OTP 2. Tại sao dùng Custom Annotation tối ưu hơn Pointcut quét theo tên hàm? Dùng Custom Annotation @RequiresOTP tối ưu hơn việc dùng Pointcut quét theo tên hàm thông thường vì annotation thể hiện rõ ý nghĩa bảo mật ngay tại nơi khai báo hàm.
+
+Khi nhìn vào service, ta biết ngay hàm nào cần kiểm tra OTP:
+
+@RequiresOTP public String withdraw(double amount, String otp) { return "Rút tiền thành công"; } Nếu dùng Pointcut theo tên hàm, ví dụ quét các hàm có tên withdraw hoặc transfer, logic bảo mật sẽ phụ thuộc vào tên phương thức. Cách này dễ sai khi đổi tên hàm, thêm hàm mới hoặc có nhiều hàm trùng tên nhưng không cùng yêu cầu bảo mật.
+
+Ví dụ:
+
+@Around("execution(* *..Service.withdraw(..)) || execution( *..*Service.transfer(..))") Cách quét theo tên như trên có một số nhược điểm:
+
+Dễ bỏ sót hàm mới nếu lập trình viên quên thêm tên hàm vào pointcut. Dễ áp dụng nhầm cho hàm không cần OTP nhưng có tên giống hoặc gần giống. Khi đổi tên hàm, pointcut có thể không còn hoạt động đúng. Logic bảo mật bị tách xa khỏi hàm nghiệp vụ nên khó đọc và khó bảo trì. Pointcut ngày càng dài và phức tạp khi số lượng hàm cần bảo mật tăng lên. Ngược lại, với Custom Annotation, hàm nào cần bảo mật thì chỉ cần đánh dấu trực tiếp:
+
+@RequiresOTP public String transfer(String toUser, double amount, String otp) { return "Chuyển khoản thành công"; } Aspect chỉ cần quét các hàm có annotation:
+
+@Around("@annotation(requiresOTP)") Cách này có các ưu điểm:
+
+Rõ ràng: nhìn vào hàm là biết hàm đó cần OTP. Linh hoạt: muốn bảo mật hàm nào thì chỉ cần thêm @RequiresOTP. Ít phụ thuộc vào tên hàm, nên đổi tên hàm không làm hỏng logic bảo mật. Dễ mở rộng: sau này có thêm hàm payBill, deposit, changePassword thì chỉ cần gắn annotation. Dễ bảo trì: logic kiểm tra OTP tập trung trong Aspect, service không còn lặp code verifyOtp. Xử lý dữ liệu đầu vào tốt hơn: Aspect có thể kiểm tra tập trung các trường hợp OTP sai, OTP rỗng, OTP null hoặc chỉ chứa khoảng trắng. Vì vậy, dùng Custom Annotation giúp code rõ ràng hơn, ít lặp hơn, dễ mở rộng hơn và phù hợp hơn với nguyên lý tách biệt trách nhiệm trong AOP.
