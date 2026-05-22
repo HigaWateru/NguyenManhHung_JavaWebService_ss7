@@ -1,0 +1,17 @@
++------------------------------+-----------------------------------------------+-----------------------------------------------+
+| Tiêu chí                     | @RestControllerAdvice                         | @AfterThrowing                                |
++------------------------------+-----------------------------------------------+-----------------------------------------------+
+| Phạm vi hoạt động            | Tầng Web/Controller, xử lý exception khi gọi  | Cơ chế AOP, bắt exception tại Service,        |
+|                              | API.                                          | Repository hoặc package được chỉ định.        |
++------------------------------+-----------------------------------------------+-----------------------------------------------+
+| Mục đích chính               | Chuẩn hóa HTTP response trả về cho client.    | Ghi log/audit lỗi nội bộ.                     |
++------------------------------+-----------------------------------------------+-----------------------------------------------+
+| Khả năng đổi JSON trả về     | Rất phù hợp, có thể tùy chỉnh HTTP status,    | Không phù hợp để tạo HTTP response vì aspect  |
+|                              | response body và message.                     | không đại diện trực tiếp cho tầng Web.        |
++------------------------------+-----------------------------------------------+-----------------------------------------------+
+| Khả năng ghi log ngầm        | Có thể ghi log, nhưng dễ lẫn trách nhiệm nếu  | Rất phù hợp để ghi log ngầm, lưu stack trace  |
+|                              | lạm dụng trong handler.                       | mà không làm bẩn code Service.                |
++------------------------------+-----------------------------------------------+-----------------------------------------------+
+| Nên dùng khi nào             | Khi cần trả lỗi rõ ràng, thống nhất và an     | Khi cần debug, audit hoặc theo dõi lỗi nội    |
+|                              | toàn cho client.                              | bộ mà không viết nhiều try-catch.             |
++------------------------------+-----------------------------------------------+-----------------------------------------------+
